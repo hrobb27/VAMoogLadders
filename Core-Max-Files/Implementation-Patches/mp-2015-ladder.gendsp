@@ -1,0 +1,154 @@
+{
+	"patcher" : 	{
+		"fileversion" : 1,
+		"appversion" : 		{
+			"major" : 8,
+			"minor" : 2,
+			"revision" : 1,
+			"architecture" : "x64",
+			"modernui" : 1
+		}
+,
+		"classnamespace" : "dsp.gen",
+		"rect" : [ 423.0, 99.0, 881.0, 459.0 ],
+		"bglocked" : 0,
+		"openinpresentation" : 0,
+		"default_fontsize" : 12.0,
+		"default_fontface" : 0,
+		"default_fontname" : "Arial",
+		"gridonopen" : 1,
+		"gridsize" : [ 15.0, 15.0 ],
+		"gridsnaponopen" : 1,
+		"objectsnaponopen" : 1,
+		"statusbarvisible" : 2,
+		"toolbarvisible" : 1,
+		"lefttoolbarpinned" : 0,
+		"toptoolbarpinned" : 0,
+		"righttoolbarpinned" : 0,
+		"bottomtoolbarpinned" : 0,
+		"toolbars_unpinned_last_save" : 0,
+		"tallnewobj" : 0,
+		"boxanimatetime" : 200,
+		"enablehscroll" : 1,
+		"enablevscroll" : 1,
+		"devicewidth" : 0.0,
+		"description" : "",
+		"digest" : "",
+		"tags" : "",
+		"style" : "",
+		"subpatcher_template" : "",
+		"assistshowspatchername" : 0,
+		"boxes" : [ 			{
+				"box" : 				{
+					"id" : "obj-2",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 346.0, 213.0, 32.0, 22.0 ],
+					"text" : "tanh"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-3",
+					"maxclass" : "newobj",
+					"numinlets" : 0,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 255.0, 87.0, 216.0, 22.0 ],
+					"text" : "Param r @default 0. @min 0. @max 1."
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-6",
+					"maxclass" : "newobj",
+					"numinlets" : 0,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 158.0, 58.0, 288.0, 22.0 ],
+					"text" : "Param cutoff @default 1000. @min 0. @max 22050."
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"code" : "//this code is a translation of Puckette's pd code for Bob~\r\n//the lack of arrays in gen~ makes this a bit tricky. But not impossible!\r\nHistory der1_1(0);\r\nHistory der1_2(0);\r\nHistory der1_3(0);\r\nHistory der1_4(0);\r\nHistory der2_1(0);\r\nHistory der2_2(0);\r\nHistory der2_3(0);\r\nHistory der2_4(0);\r\nHistory der3_1(0);\r\nHistory der3_2(0);\r\nHistory der3_3(0);\r\nHistory der3_4(0);\r\nHistory der4_1(0);\r\nHistory der4_2(0);\r\nHistory der4_3(0);\r\nHistory der4_4(0);\r\nHistory ts1(0);\r\nHistory ts2(0);\r\nHistory ts3(0);\r\nHistory ts4(0);\r\nHistory os1(0);\r\nHistory os2(0);\r\nHistory os3(0);\r\nHistory os4(0);\r\nHistory bs1(0);\r\nHistory bs2(0);\r\nHistory bs3(0);\r\nHistory bs4(0);\r\nHistory s1(0);\r\nHistory s2(0);\r\nHistory s3(0);\r\nHistory s4(0);\r\n//perform derivative calculation on der1's stuff\r\nfc = in1;\r\nres = in2* 8.;\r\nt = 1./samplerate;\r\nk = twopi*fc;\r\nx = in3;\r\n//substituting puckette's clip function with a tanh (same as setting sat=1)\r\nss1 = tanh(s1);\r\nss2 = tanh(s2);\r\nss3 = tanh(s3);\r\nder1_1 = k * (tanh(x - (res * s4)) - ss1);\r\nder1_2 = k * (ss1 - ss2);\r\nder1_3 = k * (ss2 - ss3);\r\nder1_4 = k * (ss3 - tanh(s4));\r\n\r\nts1 = s1 + 0.5 * t * der1_1;\r\nts2 = s2 + 0.5 * t * der1_2;\r\nts3 = s3 + 0.5 * t * der1_3;\r\nts4 = s4 + 0.5 * t * der1_4;\r\n\r\nss1 = tanh(ts1);\r\nss2 = tanh(ts2);\r\nss3 = tanh(ts3);\r\nder2_1 = k * (tanh(x - (res * ts4)) - ss1);\r\nder2_2 = k * (ss1 - ss2);\r\nder2_3 = k * (ss2 - ss3);\r\nder2_4 = k * (ss3 - tanh(ts4));\r\n\r\nts1 = s1 + 0.5 * t * der2_1;\r\nts2 = s2 + 0.5 * t * der2_2;\r\nts3 = s3 + 0.5 * t * der2_3;\r\nts4 = s4 + 0.5 * t * der2_4;\r\n\r\nss1 = tanh(ts1);\r\nss2 = tanh(ts2);\r\nss3 = tanh(ts3);\r\nder3_1 = k * (tanh(x - (res * ts4)) - ss1);\r\nder3_2 = k * (ss1 - ss2);\r\nder3_3 = k * (ss2 - ss3);\r\nder3_4 = k * (ss3 - tanh(ts4));\r\n\r\nts1 = s1 + t * der3_1;\r\nts2 = s2 + t * der3_2;\r\nts3 = s3 + t * der3_3;\r\nts4 = s4 + t * der3_4;\r\n\r\nss1 = tanh(ts1);\r\nss2 = tanh(ts2);\r\nss3 = tanh(ts3);\r\nder4_1 = k * (tanh(x - (res * ts4)) - ss1);\r\nder4_2 = k * (ss1 - ss2);\r\nder4_3 = k * (ss2 - ss3);\r\nder4_4 = k * (ss3 - tanh(ts4));\r\n\r\ns1 = s1 + (1./6.) * t * (der1_1 + 2. * der2_1 + 2. * der3_1 + der4_1);\r\ns2 = s2 + (1./6.) * t * (der1_2 + 2. * der2_2 + 2. * der3_2 + der4_2);\r\ns3 = s3 + (1./6.) * t * (der1_3 + 2. * der2_3 + 2. * der3_3 + der4_3);\r\ns4 = s4 + (1./6.) * t * (der1_4 + 2. * der2_4 + 2. * der3_4 + der4_4);\r\n\r\nout1 = s4;",
+					"fontface" : 0,
+					"fontname" : "<Monospaced>",
+					"fontsize" : 12.0,
+					"id" : "obj-5",
+					"maxclass" : "codebox",
+					"numinlets" : 3,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 47.0, 300.0, 435.0, 236.0 ]
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-1",
+					"maxclass" : "newobj",
+					"numinlets" : 0,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 50.0, 14.0, 28.0, 22.0 ],
+					"text" : "in 1"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-4",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 176.0, 418.0, 35.0, 22.0 ],
+					"text" : "out 1"
+				}
+
+			}
+ ],
+		"lines" : [ 			{
+				"patchline" : 				{
+					"destination" : [ "obj-2", 0 ],
+					"source" : [ "obj-1", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-5", 2 ],
+					"source" : [ "obj-2", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-5", 1 ],
+					"source" : [ "obj-3", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-4", 0 ],
+					"source" : [ "obj-5", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-5", 0 ],
+					"source" : [ "obj-6", 0 ]
+				}
+
+			}
+ ]
+	}
+
+}
